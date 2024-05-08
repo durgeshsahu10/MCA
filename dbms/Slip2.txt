@@ -1,0 +1,93 @@
+Q1. 
+Creating Tables
+
+CREATE TABLE Property (
+    pno INT PRIMARY KEY,
+    description VARCHAR(255),
+    area DECIMAL(10, 2),
+    rate DECIMAL(10, 2) CHECK (rate > 0)
+);
+
+CREATE TABLE Owner (
+    owner_name VARCHAR(255),
+    addr VARCHAR(255),
+    phno VARCHAR(15),
+    FOREIGN KEY (addr) REFERENCES Property(description)
+);
+
+Inserting 10 records
+
+-- Inserting records into Property table
+INSERT INTO Property (pno, description, area, rate) VALUES
+(1, 'Pune', 1000, 95000),
+(2, 'Mumbai', 1200, 110000),
+(3, 'Delhi', 800, 85000),
+(4, 'Bangalore', 1500, 120000),
+(5, 'Chennai', 900, 95000),
+(6, 'Hyderabad', 1100, 105000),
+(7, 'Kolkata', 1000, 90000),
+(8, 'Ahmedabad', 1300, 115000),
+(9, 'Pune', 950, 90000),
+(10, 'Mumbai', 1400, 125000);
+
+-- Inserting records into Owner table
+INSERT INTO Owner (owner_name, addr, phno) VALUES
+('Mr. Smith', 'Pune', '1234567890'),
+('Mr. Patel', 'Mumbai', '2345678901'),
+('Mr. Joshi', 'Pune', '3456789012'),
+('Mr. Khan', 'Delhi', '4567890123'),
+('Mr. Patil', 'Bangalore', '5678901234'),
+('Mr. Sharma', 'Chennai', '6789012345'),
+('Mr. Singh', 'Hyderabad', '7890123456'),
+('Mr. Gupta', 'Kolkata', '8901234567'),
+('Mr. Reddy', 'Ahmedabad', '9012345678'),
+('Mr. Desai', 'Mumbai', '0123456789');
+
+1. Display area of property whose rate is less than 100000.
+    SELECT area FROM Property WHERE rate < 100000;
+
+2. Give the details of owner whose property is at “Pune”.
+    SELECT * FROM Owner WHERE addr = 'Pune';
+
+3. Display area wise property details.
+    SELECT * FROM Property ORDER BY area;
+
+4. Display property owned by 'Mr.Patil' having minimum rate.
+    SELECT * FROM Property WHERE description IN (SELECT description FROM Owner WHERE owner_name = 'Mr. Patil') ORDER BY rate ASC LIMIT 1;
+
+5. Delete all properties from “pune” owned by “Mr. Joshi”.
+    DELETE FROM Property WHERE description = 'Pune' AND pno IN (SELECT pno FROM Owner WHERE owner_name = 'Mr. Joshi');
+
+6. Update the phone Number of “Mr. Joshi” to 9922112233 who is having property.
+    UPDATE Owner SET phno = '9922112233' WHERE owner_name = 'Mr. Joshi';
+
+7. Delete column address from Owner table.
+    ALTER TABLE Owner DROP COLUMN addr;
+
+
+
+Q2. 
+
+-- Assuming we have a table called "Students" with columns "student_id", "student_name", and "score"
+DECLARE student_cursor CURSOR FOR
+SELECT student_id, student_name, score
+FROM Students
+WHERE score < :threshold; -- Replace ":threshold" with the desired threshold value
+
+OPEN student_cursor;
+
+FETCH NEXT FROM student_cursor INTO @student_id, @student_name, @score;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- Output student information
+    PRINT 'Student ID: ' + CAST(@student_id AS VARCHAR(10)) + ', Student Name: ' + @student_name + ', Score: ' + CAST(@score AS VARCHAR(10));
+    
+    FETCH NEXT FROM student_cursor INTO @student_id, @student_name, @score;
+END
+
+CLOSE student_cursor;
+DEALLOCATE student_cursor;
+
+
+

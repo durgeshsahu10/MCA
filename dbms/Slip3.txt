@@ -1,0 +1,111 @@
+Q1. 
+Creating Tables
+
+CREATE TABLE Employee (
+    emp_no INT PRIMARY KEY,
+    name VARCHAR(255),
+    skill VARCHAR(255),
+    payrate DECIMAL(10, 2) CHECK (payrate > 0)
+);
+
+CREATE TABLE Position (
+    posting_no INT PRIMARY KEY,
+    skill VARCHAR(255)
+);
+
+CREATE TABLE Employee_Position (
+    emp_no INT,
+    posting_no INT,
+    day VARCHAR(10),
+    shift VARCHAR(10),
+    PRIMARY KEY (emp_no, posting_no),
+    FOREIGN KEY (emp_no) REFERENCES Employee(emp_no),
+    FOREIGN KEY (posting_no) REFERENCES Position(posting_no)
+);
+
+Inserting values
+-- Inserting records into Employee table
+INSERT INTO Employee (emp_no, name, skill, payrate) VALUES
+(1, 'John', 'Manager', 25000.00),
+(2, 'Alice', 'Waiter', 15000.00),
+(3, 'Bob', 'Chef', 18000.00),
+(4, 'Charlie', 'Manager', 24000.00),
+(5, 'David', 'Waiter', 16000.00),
+(6, 'Emily', 'Chef', 20000.00),
+(7, 'Frank', 'Waiter', 17000.00),
+(8, 'Grace', 'Manager', 26000.00),
+(9, 'Henry', 'Chef', 19000.00),
+(10, 'Isabel', 'Waiter', 15500.00);
+
+-- Inserting records into Position table
+INSERT INTO Position (posting_no, skill) VALUES
+(201, 'Manager'),
+(202, 'Waiter'),
+(203, 'Chef'),
+(204, 'Manager'),
+(205, 'Waiter'),
+(206, 'Chef'),
+(207, 'Waiter'),
+(208, 'Manager'),
+(209, 'Chef'),
+(210, 'Waiter');
+
+-- Inserting records into Employee_Position table
+INSERT INTO Employee_Position (emp_no, posting_no, day, shift) VALUES
+(1, 201, 'Monday', 'Morning'),
+(2, 202, 'Tuesday', 'Evening'),
+(3, 203, 'Wednesday', 'Morning'),
+(4, 204, 'Thursday', 'Evening'),
+(5, 205, 'Friday', 'Morning'),
+(6, 206, 'Saturday', 'Evening'),
+(7, 207, 'Sunday', 'Morning'),
+(8, 208, 'Monday', 'Evening'),
+(9, 209, 'Tuesday', 'Morning'),
+(10, 210, 'Wednesday', 'Evening');
+
+1. Display skill of employees name wise.
+    SELECT name, skill FROM Employee;
+
+2. Update the posting of employee to 220 whose skill is “Manager”.
+    UPDATE Employee_Position SET posting_no = 220 WHERE emp_no IN (SELECT emp_no FROM Employee WHERE skill = 'Manager');
+
+3. Find the names and rate of pay of all employees who has allocated a duty.
+    SELECT e.name, e.payrate
+    FROM Employee e
+    INNER JOIN Employee_Position ep ON e.emp_no = ep.emp_no;
+
+4. Give employee number who is working at posting_no. 201, but don’t have the skill of waiter.
+    SELECT emp_no
+    FROM Employee_Position
+    WHERE posting_no = 201
+    AND emp_no NOT IN (SELECT emp_no FROM Employee WHERE skill = 'Waiter');
+
+5. Display a list of names of employees who have skill of chef and who has assigned a duty.
+    SELECT e.name
+    FROM Employee e
+    INNER JOIN Employee_Position ep ON e.emp_no = ep.emp_no
+    WHERE e.skill = 'Chef';
+
+6. Display shift wise employee details.
+    SELECT e.name, ep.day, ep.shift
+    FROM Employee e
+    INNER JOIN Employee_Position ep ON e.emp_no = ep.emp_no;
+
+7. Update payrate of employees to 20000 whose skill is waiter.
+    UPDATE Employee SET payrate = 20000 WHERE skill = 'Waiter';
+
+
+Q2.  Write stored procedure to find maximum number of two.
+
+    CREATE PROCEDURE FindMaxOfTwo
+        @num1 INT,
+        @num2 INT
+    AS
+    BEGIN
+        IF @num1 > @num2
+            PRINT 'Maximum number is: ' + CAST(@num1 AS VARCHAR(10));
+        ELSE
+            PRINT 'Maximum number is: ' + CAST(@num2 AS VARCHAR(10));
+    END;
+
+    EXEC FindMaxOfTwo 10, 20;
